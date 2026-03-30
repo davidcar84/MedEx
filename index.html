@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedEx — Mis Resultados</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1565c0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MedEx">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===================================================
+       NAVBAR
+       =================================================== -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <svg width="28" height="28" viewBox="0 0 192 192" fill="none" aria-hidden="true">
+        <rect width="192" height="192" fill="white" fill-opacity="0.2" rx="24"/>
+        <rect x="78" y="36" width="36" height="120" fill="white" rx="6"/>
+        <rect x="36" y="78" width="120" height="36" fill="white" rx="6"/>
+        <polyline points="36,150 72,118 108,132 156,88"
+          stroke="#4fc3f7" stroke-width="8" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      MedEx
+    </div>
+    <div class="navbar-actions">
+      <button id="btn-import"     class="btn btn-ghost btn-sm">&#128194; Importar</button>
+      <button id="btn-export-zip" class="btn btn-ghost btn-sm">&#128190; Exportar ZIP</button>
+      <button id="btn-export-pdf" class="btn btn-primary btn-sm">&#128196; PDF</button>
+    </div>
+    <input type="file" id="file-input" accept=".zip" hidden>
+  </header>
+
+  <!-- ===================================================
+       TAB NAVIGATION
+       =================================================== -->
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" data-tab="charts"  role="tab">&#128202; Gr&#225;ficas</button>
+    <button class="tab-btn"        data-tab="catalog" role="tab">&#128203; Cat&#225;logo</button>
+    <button class="tab-btn"        data-tab="add"     role="tab">&#10133; A&#241;adir Resultado</button>
+  </nav>
+
+  <!-- ===================================================
+       TAB: GRÁFICAS
+       =================================================== -->
+  <section id="tab-charts" class="tab-pane active" role="tabpanel">
+    <div class="filter-bar">
+      <select id="filter-topic"    class="filter-select" aria-label="Filtrar por tema">
+        <option value="">Todos los temas</option>
+      </select>
+      <select id="filter-subtopic" class="filter-select" aria-label="Filtrar por subtema">
+        <option value="">Todos los subtemas</option>
+      </select>
+      <span id="charts-count" class="charts-count"></span>
+    </div>
+    <div id="charts-grid" class="charts-grid">
+      <!-- Populated by app.js -->
+    </div>
+  </section>
+
+  <!-- ===================================================
+       TAB: CATÁLOGO
+       =================================================== -->
+  <section id="tab-catalog" class="tab-pane" role="tabpanel">
+    <div class="section-header">
+      <h2>Cat&#225;logo de Medidas</h2>
+      <button id="btn-new-measure" class="btn btn-primary">+ Nueva Medida</button>
+    </div>
+    <div id="catalog-container">
+      <!-- Populated by app.js -->
+    </div>
+  </section>
+
+  <!-- ===================================================
+       TAB: AÑADIR RESULTADO
+       =================================================== -->
+  <section id="tab-add" class="tab-pane" role="tabpanel">
+    <div class="add-form-container">
+      <h2>A&#241;adir Resultado</h2>
+
+      <div class="form-group">
+        <label for="obs-measure">Medida *</label>
+        <select id="obs-measure">
+          <option value="">&#8212; Selecciona una medida &#8212;</option>
+        </select>
+      </div>
+
+      <div id="measure-preview" class="measure-preview hidden"></div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="obs-date">Fecha *</label>
+          <input type="date" id="obs-date">
+        </div>
+        <div class="form-group">
+          <label for="obs-value">Valor *</label>
+          <input type="number" id="obs-value" step="any" placeholder="0.0">
+        </div>
+      </div>
+
+      <button id="btn-save-obs" class="btn btn-primary btn-block">Guardar Resultado</button>
+
+      <div id="recent-obs-container" class="hidden">
+        <h3>&#218;ltimas observaciones de esta medida</h3>
+        <div id="recent-obs-list"></div>
+      </div>
+    </div>
+
+    <!-- All-measures recent observations (shown after import) -->
+    <div id="all-obs-container" class="all-obs-container hidden">
+      <div class="all-obs-header">
+        <span id="all-obs-title">Observaciones cargadas</span>
+        <span id="all-obs-count" class="charts-count"></span>
+      </div>
+      <div class="all-obs-filters">
+        <input type="text"  id="all-obs-search" placeholder="Buscar medida&#8230;" class="filter-select" style="min-width:200px">
+        <select id="all-obs-topic-filter" class="filter-select">
+          <option value="">Todos los temas</option>
+        </select>
+        <select id="all-obs-sort" class="filter-select" style="min-width:160px">
+          <option value="date-desc">Fecha &#9660; (reciente)</option>
+          <option value="date-asc">Fecha &#9650; (antigua)</option>
+          <option value="name-asc">Medida A&#8594;Z</option>
+        </select>
+      </div>
+      <div class="all-obs-table-wrap">
+        <table class="all-obs-table" id="all-obs-table">
+          <thead>
+            <tr>
+              <th>Medida</th>
+              <th>Tema</th>
+              <th>Fecha</th>
+              <th>Valor</th>
+              <th>Referencia</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="all-obs-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================
+       MODAL: NUEVA / EDITAR MEDIDA
+       =================================================== -->
+  <div id="modal-measure" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal-box">
+
+      <div class="modal-header">
+        <h3 id="modal-title">Nueva Medida</h3>
+        <button class="modal-close-btn" id="btn-close-modal" aria-label="Cerrar">&#10005;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="m-id">ID de Medida *</label>
+          <input type="text" id="m-id" placeholder="glucosa_ayunas" autocomplete="off" spellcheck="false">
+          <span class="hint">Sin espacios ni acentos. Se genera autom&#225;ticamente desde el nombre.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="m-name">Nombre *</label>
+          <input type="text" id="m-name" placeholder="Glucosa en Ayunas">
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label for="m-unit">Unidad *</label>
+            <input type="text" id="m-unit" placeholder="mg/dL">
+          </div>
+          <div class="form-group">
+            <label for="m-low">Ref. Baja</label>
+            <input type="number" id="m-low" step="any" placeholder="70">
+          </div>
+          <div class="form-group">
+            <label for="m-high">Ref. Alta</label>
+            <input type="number" id="m-high" step="any" placeholder="100">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="m-topic">Tema</label>
+            <input type="text" id="m-topic" placeholder="Metabolismo">
+          </div>
+          <div class="form-group">
+            <label for="m-subtopic">Subtema</label>
+            <input type="text" id="m-subtopic" placeholder="Carbohidratos">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="m-explanation">Explicaci&#243;n</label>
+          <textarea id="m-explanation" rows="3"
+            placeholder="Descripci&#243;n de esta medida y qu&#233; significan sus valores..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="m-explanation2">M&#225;s informaci&#243;n <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
+          <textarea id="m-explanation2" rows="3"
+            placeholder="Informaci&#243;n adicional, causas de valores alterados..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-cancel-modal" class="btn btn-outline">Cancelar</button>
+        <button id="btn-save-modal"   class="btn btn-primary">Guardar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================================================
+       TOAST NOTIFICATION
+       =================================================== -->
+  <div id="toast" class="toast hidden" role="alert" aria-live="polite"></div>
+
+  <!-- ===================================================
+       SCRIPTS  (CDN libraries first, app last)
+       =================================================== -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

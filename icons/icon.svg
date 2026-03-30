@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" fill="#1565c0" rx="24"/>
+  <!-- Medical cross -->
+  <rect x="78" y="36" width="36" height="120" fill="white" rx="6"/>
+  <rect x="36" y="78" width="120" height="36" fill="white" rx="6"/>
+  <!-- Chart line overlay -->
+  <polyline points="36,150 72,118 108,132 156,88"
+    stroke="#4fc3f7" stroke-width="7" fill="none"
+    stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

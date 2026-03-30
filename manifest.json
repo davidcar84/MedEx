@@ -1,0 +1,13 @@
+{
+  "name": "MedEx — Mis Resultados Médicos",
+  "short_name": "MedEx",
+  "description": "Seguimiento personal de resultados de análisis clínicos",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1565c0",
+  "lang": "es",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

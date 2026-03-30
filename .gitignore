@@ -1,0 +1,15 @@
+# Personal health data — never commit
+measures.csv
+observations.csv
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
