@@ -56,17 +56,6 @@ Dates use ISO 8601 format (`YYYY-MM-DD`). Empty `LowRef` or `HighRef` means the 
 
 ---
 
-## Data Preparation Scripts
-
-Two Python scripts are included to convert existing data into the MedEx format:
-
-```bash
-python convert_mdm.py          # converts your measures master data
-python convert_observations.py # converts your historical observations
-```
-
----
-
 ## Tech Stack
 
 Pure HTML / CSS / JavaScript — no build step, no backend, no framework.
