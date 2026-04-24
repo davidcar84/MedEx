@@ -481,10 +481,36 @@ async function exportPDF() {
 function getFilteredMeasures() {
   const topic    = $('filter-topic').value;
   const subtopic = $('filter-subtopic').value;
-  return DB.measures.filter(m =>
+  const recent   = $('filter-recent').value;
+
+  let base = DB.measures.filter(m =>
     (!topic    || m.topic    === topic) &&
     (!subtopic || m.subtopic === subtopic)
   );
+
+  if (recent === 'last10') {
+    const top10ids = getTop10MeasureIds();
+    base = base.filter(m => top10ids.has(m.id));
+  } else if (recent === '3m' || recent === '6m' || recent === '12m') {
+    const months  = recent === '3m' ? 3 : recent === '6m' ? 6 : 12;
+    const cutoff  = new Date();
+    cutoff.setMonth(cutoff.getMonth() - months);
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+    const active  = new Set(DB.observations.filter(o => o.date >= cutoffStr).map(o => o.measureId));
+    base = base.filter(m => active.has(m.id));
+  }
+
+  return base;
+}
+
+function getTop10MeasureIds() {
+  const sorted = [...DB.observations].sort((a, b) => b.date.localeCompare(a.date));
+  const seen   = new Set();
+  for (const o of sorted) {
+    if (seen.size >= 10) break;
+    seen.add(o.measureId);
+  }
+  return seen;
 }
 
 function updateFilters() {
@@ -1346,6 +1372,7 @@ function bindEvents() {
     renderAllCharts();
   });
   $('filter-subtopic').addEventListener('change', renderAllCharts);
+  $('filter-recent').addEventListener('change', renderAllCharts);
 
   // Catalog
   $('btn-new-measure').addEventListener('click', () => showMeasureModal(null));
